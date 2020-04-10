@@ -91,7 +91,7 @@ var style = new Style({
 
 var vectorLayer = new VectorLayer({
   source: new VectorSource({
-    url: 'data/geojson/countries.geojson',
+    url: 'data/geojson/Ro.geojson',
     format: new GeoJSON()
   }),
   style: function(feature) {
