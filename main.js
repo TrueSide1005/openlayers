@@ -69,33 +69,33 @@ import VectorSource from 'ol/source/Vector';
 import {Fill, Stroke, Style, Text} from 'ol/style';*/
 
 
-var style = new Style({
-  fill: new Fill({
+var style = new ol.style.Style({
+  fill: new ol.Fill({
     color: 'rgba(255, 255, 255, 0.6)'
   }),
-  stroke: new Stroke({
+  stroke: new ol.Stroke({
     color: '#319FD3',
     width: 1
   }),
-  text: new Text({
+  text: new ol.Text({
     font: '12px Calibri,sans-serif',
-    fill: new Fill({
+    fill: new ol.Fill({
       color: '#000'
     }),
-    stroke: new Stroke({
+    stroke: new ol.Stroke({
       color: '#fff',
       width: 3
     })
   })
 });
 
-var vectorLayer = new VectorLayer({
-  source: new VectorSource({
+var vectorLayer = new ol.VectorLayer({
+  source: new ol.VectorSource({
     url: 'data/geojson/Ro.geojson',
     format: new GeoJSON()
   }),
   style: function(feature) {
-    style.getText().setText(feature.get('name'));
+    style.getText().setText(feature.get('Name'));
     return style;
   }
 });
@@ -109,69 +109,33 @@ var map = new Map({
   })
 });
 
-var highlightStyle = new Style({
-  stroke: new Stroke({
+var highlightStyle = new ol.Style({
+  stroke: new ol.Stroke({
     color: '#f00',
     width: 1
   }),
-  fill: new Fill({
+  fill: new ol.Fill({
     color: 'rgba(255,0,0,0.1)'
   }),
-  text: new Text({
+  text: new ol.Text({
     font: '12px Calibri,sans-serif',
-    fill: new Fill({
+    fill: new ol.Fill({
       color: '#000'
     }),
-    stroke: new Stroke({
+    stroke: new ol.Stroke({
       color: '#f00',
       width: 3
     })
   })
 });
 
-var featureOverlay = new VectorLayer({
-  source: new VectorSource(),
+var featureOverlay = new ol.VectorLayer({
+  source: new ol.VectorSource(),
   map: map,
   style: function(feature) {
-    highlightStyle.getText().setText(feature.get('name'));
+    highlightStyle.getText().setText(feature.get('Name'));
     return highlightStyle;
   }
 });
 
 var highlight;
-var displayFeatureInfo = function(pixel) {
-
-  var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
-    return feature;
-  });
-
-  var info = document.getElementById('info');
-  if (feature) {
-    info.innerHTML = feature.getId() + ': ' + feature.get('name');
-  } else {
-    info.innerHTML = '&nbsp;';
-  }
-
-  if (feature !== highlight) {
-    if (highlight) {
-      featureOverlay.getSource().removeFeature(highlight);
-    }
-    if (feature) {
-      featureOverlay.getSource().addFeature(feature);
-    }
-    highlight = feature;
-  }
-
-};
-
-map.on('pointermove', function(evt) {
-  if (evt.dragging) {
-    return;
-  }
-  var pixel = map.getEventPixel(evt.originalEvent);
-  displayFeatureInfo(pixel);
-});
-
-map.on('click', function(evt) {
-  displayFeatureInfo(evt.pixel);
-});
