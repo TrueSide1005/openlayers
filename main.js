@@ -58,7 +58,16 @@ var map = new ol.Map({
         zoom: 6.3//,
         //minZoom: 6.3
     })
-});*/
+});
+
+import 'ol/ol.css';
+import Map from 'ol/Map';
+import View from 'ol/View';
+import GeoJSON from 'ol/format/GeoJSON';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import {Fill, Stroke, Style, Text} from 'ol/style';*/
+
 
 var style = new Style({
   fill: new Fill({
