@@ -1,99 +1,177 @@
-/*var map = new ol.Map({
-    target: 'map',
-    layers: [
-        new ol.layer.Tile({
-            source: new ol.source.OSM({wrapX: false}),
-        })
-    ],
-    view: new ol.View({
-        center: ol.proj.transform([25,46], 'EPSG:4326', 'EPSG:3857'),
-        //center: ol.proj.fromLonLat([25, 46]),
-        zoom: 6.3,
-        minZoom: 6.3
-    })
-});*/
-/*var RO = new ol.layer.Vector({
-    title: 'added Layer',
-    source: new ol.source.GeoJSON({
-       projection : 'EPSG:3857',
-       url: 'Ro.geojson'
-    })
-});
-
-map.addLayer(RO);*/
-
-
-
-/*
-//Vector Layers
-var RO = new ol.layer.Vector({
-    source: new ol.source.Vector({
-        url:'Ro.json',
-        format: new ol.format.JSON()
+/*var style = new Style({
+    fill: new Fill({
+      color: 'rgba(255, 255, 255, 0.6)'
     }),
-    visible: true,
-    title: 'RomaniaCountiesGeoJSON'
-});
-
-map.addLayer([RO]);*/
-
-
-
-/*var map = new ol.Map({
-    target: 'map',
-    layers: [
-        new ol.layer.Tile({
-            source: new ol.source.OSM({wrapX: false}),
-        }),
-        RO
-    ],
-    view: new ol.View({
-        center: ol.proj.fromLonLat([25, 46]),
-        zoom: 6.3,
-        minZoom: 6.3
+    stroke: new Stroke({
+      color: '#319FD3',
+      width: 1
+    }),
+    text: new Text({
+      font: '12px Calibri,sans-serif',
+      fill: new Fill({
+        color: '#000'
+      }),
+      stroke: new Stroke({
+        color: '#fff',
+        width: 3
+      })
     })
-});*/
-
-/*var vS=new ol.source.GeoJSON(
-	({
-		url: 'Ro.geojson',
-         projection: 'EPSG:3857'
-	})
-);
-var vL= new ol.layer.Vector({source: vS});*/
-
-/*
-var RO = new ol.layer.Vector({
-    title: 'added Layer',
-    source: new ol.source.GeoJSON({
-       projection : 'EPSG:3857',
-       url: 'data/geojson/Ro.geojson'
-    })
-});*/
+  });
 
 
 var gjsonFile = new ol.layer.Vector({
     source: new ol.source.Vector({
         url: 'data/geojson/Ro.geojson',
         format: new ol.format.GeoJSON()
-    }) 
-});
+    }),
+    visible:true,
+    title: 'ROCounties',
+    style: new ol.style.Style({
+        fill: fillStyle,
+        stroke: strokeStyle,
+        //image: circleStyl
+    })
+});*/
+
+/*
+var vectorLayer = new VectorLayer({
+    source: new VectorSource({
+      url: 'data/geojson/countries.geojson',
+      format: new GeoJSON()
+    }),
+    style: function(feature) {
+      style.getText().setText(feature.get('Name'));
+      return style;
+    }
+  });
 
 var map = new ol.Map({
-    target: 'map',  // The DOM element that will contains the map
-    //renderer: 'canvas', // Force the renderer to be used
+    target: 'map',
     layers: [
-        // Add a new Tile layer getting tiles from OpenStreetMap source
         new ol.layer.Tile({
             source: new ol.source.OSM()
         }),
-        gjsonFile
+        vectorLayer
     ],
     view: new ol.View({
         center: ol.proj.transform([25,46], 'EPSG:4326', 'EPSG:3857'),
         zoom: 6.3//,
         //minZoom: 6.3
     })
+});*/
+
+import 'ol/ol.css';
+import Map from 'ol/Map';
+import View from 'ol/View';
+import GeoJSON from 'ol/format/GeoJSON';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import {Fill, Stroke, Style, Text} from 'ol/style';
+
+
+var style = new Style({
+  fill: new Fill({
+    color: 'rgba(255, 255, 255, 0.6)'
+  }),
+  stroke: new Stroke({
+    color: '#319FD3',
+    width: 1
+  }),
+  text: new Text({
+    font: '12px Calibri,sans-serif',
+    fill: new Fill({
+      color: '#000'
+    }),
+    stroke: new Stroke({
+      color: '#fff',
+      width: 3
+    })
+  })
 });
 
-//map.addLayer(gjsonFile);
+var vectorLayer = new VectorLayer({
+  source: new VectorSource({
+    url: 'data/geojson/countries.geojson',
+    format: new GeoJSON()
+  }),
+  style: function(feature) {
+    style.getText().setText(feature.get('name'));
+    return style;
+  }
+});
+
+var map = new Map({
+  layers: [vectorLayer],
+  target: 'map',
+  view: new View({
+    center: [0, 0],
+    zoom: 1
+  })
+});
+
+var highlightStyle = new Style({
+  stroke: new Stroke({
+    color: '#f00',
+    width: 1
+  }),
+  fill: new Fill({
+    color: 'rgba(255,0,0,0.1)'
+  }),
+  text: new Text({
+    font: '12px Calibri,sans-serif',
+    fill: new Fill({
+      color: '#000'
+    }),
+    stroke: new Stroke({
+      color: '#f00',
+      width: 3
+    })
+  })
+});
+
+var featureOverlay = new VectorLayer({
+  source: new VectorSource(),
+  map: map,
+  style: function(feature) {
+    highlightStyle.getText().setText(feature.get('name'));
+    return highlightStyle;
+  }
+});
+
+var highlight;
+var displayFeatureInfo = function(pixel) {
+
+  var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
+    return feature;
+  });
+
+  var info = document.getElementById('info');
+  if (feature) {
+    info.innerHTML = feature.getId() + ': ' + feature.get('name');
+  } else {
+    info.innerHTML = '&nbsp;';
+  }
+
+  if (feature !== highlight) {
+    if (highlight) {
+      featureOverlay.getSource().removeFeature(highlight);
+    }
+    if (feature) {
+      featureOverlay.getSource().addFeature(feature);
+    }
+    highlight = feature;
+  }
+
+};
+
+map.on('pointermove', function(evt) {
+  if (evt.dragging) {
+    return;
+  }
+  var pixel = map.getEventPixel(evt.originalEvent);
+  displayFeatureInfo(pixel);
+});
+
+map.on('click', function(evt) {
+  displayFeatureInfo(evt.pixel);
+});
