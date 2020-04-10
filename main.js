@@ -60,15 +60,6 @@ var map = new ol.Map({
     })
 });*/
 
-import 'ol/ol.css';
-import Map from 'ol/Map';
-import View from 'ol/View';
-import GeoJSON from 'ol/format/GeoJSON';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import {Fill, Stroke, Style, Text} from 'ol/style';
-
-
 var style = new Style({
   fill: new Fill({
     color: 'rgba(255, 255, 255, 0.6)'
