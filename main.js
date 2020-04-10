@@ -100,10 +100,10 @@ var vectorLayer = new ol.VectorLayer({
   }
 });
 
-var map = new Map({
+var map = new ol.Map({
   layers: [vectorLayer],
   target: 'map',
-  view: new View({
+  view: new ol.View({
     center: [0, 0],
     zoom: 1
   })
